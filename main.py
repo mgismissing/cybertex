@@ -1,15 +1,19 @@
+# Dev settings
+doPipUpdate = False
+
 # Clear console
 print(end="\033c")
 
 # Default modules
 import os, sys
 
-# Pip update
-print("→[     ] Updating pip", end="\r")
-if not os.system("pip install --upgrade pip >> NUL") == 0:
+if doPipUpdate:
+    # Pip update
+    print("→[     ] Updating pip", end="\r")
+    if not os.system("pip install --upgrade pip >> NUL") == 0:
         print("×[EX004] > FATAL: Could not update \"pip\"")
         sys.exit(4)
-print("√[DONE ]")
+    print("√[DONE ]")
 
 # Modules update
 print("→[     ] Updating module \"colorama\"", end="\r")
@@ -199,14 +203,28 @@ try:
             sys.exit(0)
         elif cmd[0] == "ls":
             dir = ""
-            for file in os.listdir():
-                if (not file.startswith(".")) or "-h" in cmd:
-                    if os.path.isfile(file):
-                        dir += f"{Fore.WHITE}{file} {Fore.GREEN}● {Fore.WHITE}"
-                    else:
-                        dir += f"{Fore.YELLOW}{file} {Fore.GREEN}● {Fore.WHITE}"
+            try:
+                for file in os.listdir():
+                    if (not file.startswith(".")) or "-h" in cmd:
+                        if os.path.isfile(file):
+                            dir += f"{Fore.WHITE}{file} {Fore.GREEN}● {Fore.WHITE}"
+                        else:
+                            dir += f"{Fore.YELLOW}{file} {Fore.GREEN}● {Fore.WHITE}"
+            except PermissionError:
+                print(f"{Fore.RED}ls > permission denied\n")
+                continue
             dir = dir[0:-13]
             print(dir)
+        elif cmd[0] == "read":
+            try:
+                with open(cmd[1], "r") as file:
+                    print(file.read())
+            except FileNotFoundError:
+                print(f"{Fore.RED}read > file not found")
+            except IndexError:
+                print(f"{Fore.RED}read > missing argument 1")
+            except PermissionError:
+                print(f"{Fore.RED}read > permission denied")
         elif cmd[0] in ["usrlist", "userlist", "usrls", "userls"]:
             usrlist = ""
             for user in data.users:
