@@ -1,5 +1,5 @@
 # Dev settings
-doPipUpdate = False
+doPipUpdate = True
 
 # Clear console
 print(end="\033c")
@@ -7,13 +7,15 @@ print(end="\033c")
 # Default modules
 import os, sys
 
+# Pip update
+print("→[     ] Updating pip", end="\r")
 if doPipUpdate:
-    # Pip update
-    print("→[     ] Updating pip", end="\r")
     if not os.system("pip install --upgrade pip >> NUL") == 0:
         print("×[EX004] > FATAL: Could not update \"pip\"")
         sys.exit(4)
     print("√[DONE ]")
+else:
+    print("*[SKIP ]")
 
 # Modules update
 print("→[     ] Updating module \"colorama\"", end="\r")
@@ -215,6 +217,20 @@ try:
                 continue
             dir = dir[0:-13]
             print(dir)
+        elif cmd[0] == "math":
+            try:
+                cmd[1]
+            except IndexError:
+                pass
+        elif cmd[0] == "net":
+            try:
+                if cmd[1] == "ping":
+                    try:
+                        os.system(f"ping {cmd[2]}")
+                    except IndexError:
+                        print(f"{Fore.RED}net/ping > missing ip address")
+            except IndexError:
+                print(f"{Fore.RED}net > missing command")
         elif cmd[0] == "read":
             try:
                 with open(cmd[1], "r") as file:
@@ -225,6 +241,13 @@ try:
                 print(f"{Fore.RED}read > missing argument 1")
             except PermissionError:
                 print(f"{Fore.RED}read > permission denied")
+        elif cmd[0] in ["wait", "sleep"]:
+            try:
+                time.sleep(int(cmd[1])/1000)
+            except IndexError:
+                print(f"{Fore.RED}{cmd[0]} > missing argument 1")
+            except ValueError:
+                print(f"{Fore.RED}{cmd[0]} > invalid number for argument 1")
         elif cmd[0] in ["usrlist", "userlist", "usrls", "userls"]:
             usrlist = ""
             for user in data.users:
